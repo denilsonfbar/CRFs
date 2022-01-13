@@ -1,26 +1,7 @@
 import numpy as np
+from models import * 
 
-
-### MODEL: HMM 1 (Prof. André example)
-
-# Symbols index:    0  1
-# States index:     A: 0   B: 1
-n_states = 2
-
-# Initial probabilities
-I = np.array([0.5,0.5])
-
-# Transition matrix
-# AA     AB
-# BA     BB
-A = np.array([[0.99,0.01], 
-              [0.3 ,0.7 ]])
-
-# Emission matrix
-# A0    A1
-# B0    B1
-B = np.array([[0.5,0.5],
-              [0.1,0.9]])
+verbose = True  # Print the detailed execution log
 
 # Converting the probabilities to log in base 2
 I = np.log2(I)
@@ -103,9 +84,10 @@ def viterbi(x):
 
 
 
-verbose = True
-sequence = np.array([0,1,1])
-viterbi(sequence)
 
-sequence = np.array([0,0,0,0,1,0,1,1,1,0])
+
+# sequence = np.array([0,1,1])
+# sequence = np.array([0,0,0,0,1,0,1,1,1,0])
+
+sequence = np.array([0,1,2,3,0,1,2,3])
 viterbi(sequence)
