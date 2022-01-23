@@ -49,8 +49,8 @@ elif  model == 2:
 elif  model == 3:
 
     # Symbols index:    A:0   C:1   G:2   T:3
-    n_symbols = 6
-    
+    n_symbols = 4
+
     # States index:     5UTR: 0     CDS: 1    3UTR: 2
     n_states = 3
 

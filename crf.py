@@ -3,10 +3,10 @@ from models import *
 
 verbose = True  # Print the detailed execution log
 
-# Converting the probabilities to log in base 2
-I = np.log2(I)
-A = np.log2(A)
-B = np.log2(B)
+# Converting the probabilities of model to log in base 2
+I = np.log2(I)  # Initial probabilities
+A = np.log2(A)  # Transition matrix
+B = np.log2(B)  # Emission matrix
 
 
 ### HMM FEATURE FUNCTION
@@ -33,11 +33,15 @@ ff_list.append(f_HMM)
 ## Return the weight log sum of features functions results of a time t of sequence x
 #
 def psi(t,y_t,y_t_minus_1,x):
-    sum_features = 0.0
+    log_sum_features = 0
     for ff in ff_list:
-        sum_features += ff.w * ff.f(t,y_t,y_t_minus_1,x)
-    return sum_features
-    
+        log_factor = ff.w * ff.f(t,y_t,y_t_minus_1,x)
+        if log_sum_features == 0:  # log(0) is indetermined
+            log_sum_features = log_factor
+        else:
+            log_sum_features = np.logaddexp2(log_sum_features, log_factor) 
+    return log_sum_features
+
 ## Return the Viterbi path
 #
 def viterbi(x):
@@ -77,8 +81,9 @@ def viterbi(x):
         print (viterbi_matrix)
         print("\nPaths: ")
         print (viterbi_paths)
-        print("\nBest path:\tLog probability: ", probability_best_path)
+        print("\nBest path: ")
         print(best_path)
+        print("Log probability of best path: ", probability_best_path)
 
     return best_path
 
