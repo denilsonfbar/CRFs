@@ -207,8 +207,8 @@ if model == 1:
     sequence = np.array([0,1,1])
     experiment(sequence)
 
-    sequence = np.array([0,0,0,0,1,0,1,1,1,0])
-    experiment(sequence)
+    # sequence = np.array([0,0,0,0,1,0,1,1,1,0])
+    # experiment(sequence)
     
 elif model == 2:
     

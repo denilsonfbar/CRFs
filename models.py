@@ -1,6 +1,6 @@
 import numpy as np
 
-model = 3
+model = 1
 
 if model == 1:  # Prof. André example
 

@@ -3,8 +3,7 @@ from models import *
 
 verbose = True  # print the detailed execution informations
 
-
-### HMM FEATURE FUNCTION
+## HMM FEATURE FUNCTION
 class f_HMM:
     
     w = 1.0  # weight of feature function
@@ -18,11 +17,9 @@ class f_HMM:
         else:
             return np.log2(emission_prob * A[y_t_minus_1,y_t])
 
-
-### FEATURES FUNCTIONS LIST
+## FEATURES FUNCTIONS LIST
 ff_list = []  
 ff_list.append(f_HMM)
-
 
 ## Return the weighted log sum of features functions results of a time t of a sequence x
 #
@@ -35,8 +32,42 @@ def log_sum_features(t,y_t,y_t_minus_1,x):
             log_sum = np.logaddexp2(log_sum, weighted_log_factor) 
     return log_sum
 
+## FORWARD
+# Receives a sequence x and the number of states L
+# Returns the alpha matrix
+def forward(x,L):  
+    N = x.size  # length of sequence
+    alpha_matrix = np.full((L,N), np.NINF)
+    # Inicialization:
+    for j in range(L):
+        alpha_matrix[j,0] = log_sum_features(0,j,None,x)
+    # Induction:
+    for t in range(1,N):
+        for j in range(L):
+            for i in range(L):
+                aux = alpha_matrix[i,t-1] + log_sum_features(t,j,i,x)
+                if i == 0: 
+                    alpha_matrix[j,t] = aux
+                else:
+                    alpha_matrix[j,t] = np.logaddexp2(alpha_matrix[j,t],aux)
+    if verbose:
+        print("\nFORWARD")
+        print("Alpha matrix (log values):")
+        print(alpha_matrix)
+        print("Alpha matrix (real values):")
+        print(np.exp2(alpha_matrix))
+        # Termination:
+        for j in range(L):
+            if j == 0: 
+                seq_prob = alpha_matrix[j,N-1]
+            else:
+                seq_prob = np.logaddexp2(seq_prob,alpha_matrix[j,N-1])
+        print("Sequence probability:")
+        print("log: ", seq_prob, "\treal: ", np.exp2(seq_prob))
+    return alpha_matrix
 
-## Return the Viterbi path
+## VITERBI
+# Return the Viterbi path
 #
 def viterbi(x):
     n_positions = x.size
@@ -75,10 +106,11 @@ def viterbi(x):
 
 
 
-
-
-# sequence = np.array([0,1,1])
+sequence = np.array([0,1,1])
 # sequence = np.array([0,0,0,0,1,0,1,1,1,0])
 
-sequence = np.array([0,1,2,3,0,1,2,3])
+# sequence = np.array([0,1,2,3,0,1,2,3])
+
+forward(sequence,n_states)
+
 viterbi(sequence)
