@@ -1,32 +1,14 @@
-import numpy as np
-from models import * 
-
-verbose = True  # print the detailed execution informations
-
-## HMM FEATURE FUNCTION
-class f_HMM:
-    
-    w = 1.0  # weight of feature function
-
-    # Return the log2 value of feature function of a time t of a sequence x
-    def f(t,y_t,y_t_minus_1,x):  # feature function
-        emission_prob = B[y_t,x[t]]
-        if t == 0:
-            return np.log2(emission_prob * I[y_t])
-        else:
-            return np.log2(emission_prob * A[y_t_minus_1,y_t])
-
-## FEATURES FUNCTIONS LIST
-ff_list = []  
-ff_list.append(f_HMM)
+from features import *
 
 # Return the weighted log sum of features functions results of a time t of a sequence x
 def log_sum_features(t,y_t,y_t_minus_1,x):
-    log_sum = np.NINF
+    sum = 0.0
     for i in range(len(ff_list)):
-        weighted_log_factor = ff_list[i].w * ff_list[i].f(t,y_t,y_t_minus_1,x)
-        log_sum = np.logaddexp2(log_sum, weighted_log_factor) 
-    return log_sum
+        factor = ff_list[i](t,y_t,y_t_minus_1,x)
+        sum += factor
+    weighted_factor = W[i] * sum
+    log_weighted_factor = np.log2(weighted_factor)
+    return log_weighted_factor
 
 ## FORWARD
 # Receives a sequence x and the number of states L
@@ -152,15 +134,3 @@ def viterbi_decoding(x,L):
         print("Best path probability:")
         print("log: ", prob_best_path, "\treal: ", np.exp2(prob_best_path))
     return best_path
-
-
-
-sequence = np.array([0,1,1])
-# sequence = np.array([0,0,0,0,1,0,1,1,1,0])
-
-# sequence = np.array([0,1,2,3,0,1,2,3])
-
-alpha_matrix = forward(sequence,n_states)
-beta_matrix = backward(sequence,n_states)
-posterior_decoding_path = posterior_decoding(alpha_matrix,beta_matrix)
-viterbi_decoding_path = viterbi_decoding(sequence,n_states)
