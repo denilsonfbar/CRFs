@@ -116,42 +116,41 @@ def posterior_decoding(alpha_matrix,beta_matrix):
         print(path)
     return path
 
-
-## VITERBI
-# Return the Viterbi path
-def viterbi(x):
-    n_positions = x.size
-    viterbi_matrix = np.full((n_states,n_positions), np.NINF)
-    viterbi_paths = np.full((n_states,n_positions), -1)
-
-    for t in range(n_positions):
-        for j in range(n_states):
-            log_position_probs = np.full((n_states), np.NINF)
-            for i in range(n_states):
-                log_position_probs[i] = log_sum_features(t,j,i,x)
-                if t != 0: 
-                    log_position_probs[i] += viterbi_matrix[i,t-1]
+## VITERBI DECODING
+# Receives a sequence x and the number of states L
+# Returns the Viterbi decoding path of states
+def viterbi_decoding(x,L):
+    N = x.size  # length of sequence
+    viterbi_matrix = np.full((L,N), np.NINF)
+    paths = np.full((L,N), -1)
+    # Inicialization:
+    for j in range(L):
+        viterbi_matrix[j,0] = log_sum_features(0,j,None,x)
+    # Induction:
+    for t in range(1,N):
+        for j in range(L):
+            log_position_probs = np.full((L), np.NINF)
+            for i in range(L):
+                log_position_probs[i] = log_sum_features(t,j,i,x) + viterbi_matrix[i,t-1]
             viterbi_matrix[j,t] = np.amax(log_position_probs)
-            if t != 0: 
-                viterbi_paths[j,t-1] = np.argmax(log_position_probs)
-    
-    # Finishing the paths:
-    for j in range(n_states):
-        viterbi_paths[j,n_positions-1] = j
-
-    probability_best_path = np.amax(viterbi_matrix[:,n_positions-1])
-    best_path = viterbi_paths[np.argmax(viterbi_matrix[:,n_positions-1])]
-
+            paths[j,t-1] = np.argmax(log_position_probs)
+    # Termination:
+    for j in range(L):
+        paths[j,N-1] = j
+    best_path = paths[np.argmax(viterbi_matrix[:,N-1])]
     if verbose:
         print("\nVITERBI DECODING")
-        print("\nViterbi matrix:")
-        print (viterbi_matrix)
-        print("\nPaths: ")
-        print (viterbi_paths)
-        print("\nBest path: ")
+        print("Viterbi matrix (log values):")
+        print(viterbi_matrix)
+        print("Viterbi matrix (real values):")
+        print(np.exp2(viterbi_matrix))
+        print("Paths of states: ")
+        print (paths)
+        print("Best path: ")
         print(best_path)
-        print("Log probability of best path: ", probability_best_path)
-
+        prob_best_path = np.amax(viterbi_matrix[:,N-1])
+        print("Best path probability:")
+        print("log: ", prob_best_path, "\treal: ", np.exp2(prob_best_path))
     return best_path
 
 
@@ -164,5 +163,4 @@ sequence = np.array([0,1,1])
 alpha_matrix = forward(sequence,n_states)
 beta_matrix = backward(sequence,n_states)
 posterior_decoding_path = posterior_decoding(alpha_matrix,beta_matrix)
-
-# viterbi(sequence)
+viterbi_decoding_path = viterbi_decoding(sequence,n_states)
