@@ -90,6 +90,32 @@ def backward(x,L):
         print("log: ", seq_prob, "\treal: ", np.exp2(seq_prob))
     return beta_matrix
 
+## POSTERIOR DECODING
+# Receives alpha and beta matrix
+# Returns the posterior decoding path of states
+def posterior_decoding(alpha_matrix,beta_matrix):
+    N = len(alpha_matrix[0,:])
+    L = len(alpha_matrix[:,0])
+    seq_prob = np.NINF
+    for j in range(L):
+        seq_prob = np.logaddexp2(seq_prob,alpha_matrix[j,N-1])
+    posterior_matrix = np.full((L,N), np.NINF)
+    for t in range(N-1):
+        for j in range(L):
+            posterior_matrix[j,t] = alpha_matrix[j,t] + beta_matrix[j,t+1] - seq_prob
+    for j in range(L):
+        posterior_matrix[j,N-1] = alpha_matrix[j,N-1] - seq_prob
+    path = np.argmax(posterior_matrix, axis=0)
+    if verbose:
+        print("\nPOSTERIOR DECODING")
+        print("Posterior decoding matrix (log values):")
+        print(posterior_matrix)
+        print("Posterior decoding matrix (real values):")
+        print(np.exp2(posterior_matrix))
+        print("Path of states:")
+        print(path)
+    return path
+
 
 ## VITERBI
 # Return the Viterbi path
@@ -135,7 +161,8 @@ sequence = np.array([0,1,1])
 
 # sequence = np.array([0,1,2,3,0,1,2,3])
 
-forward(sequence,n_states)
-backward(sequence,n_states)
+alpha_matrix = forward(sequence,n_states)
+beta_matrix = backward(sequence,n_states)
+posterior_decoding_path = posterior_decoding(alpha_matrix,beta_matrix)
 
 # viterbi(sequence)
