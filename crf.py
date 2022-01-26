@@ -8,8 +8,7 @@ class f_HMM:
     
     w = 1.0  # weight of feature function
 
-    ## Return the log2 value of feature function of a time t of a sequence x
-    #
+    # Return the log2 value of feature function of a time t of a sequence x
     def f(t,y_t,y_t_minus_1,x):  # feature function
         emission_prob = B[y_t,x[t]]
         if t == 0:
@@ -21,15 +20,12 @@ class f_HMM:
 ff_list = []  
 ff_list.append(f_HMM)
 
-## Return the weighted log sum of features functions results of a time t of a sequence x
-#
+# Return the weighted log sum of features functions results of a time t of a sequence x
 def log_sum_features(t,y_t,y_t_minus_1,x):
+    log_sum = np.NINF
     for i in range(len(ff_list)):
         weighted_log_factor = ff_list[i].w * ff_list[i].f(t,y_t,y_t_minus_1,x)
-        if i == 0:
-            log_sum = weighted_log_factor
-        else:
-            log_sum = np.logaddexp2(log_sum, weighted_log_factor) 
+        log_sum = np.logaddexp2(log_sum, weighted_log_factor) 
     return log_sum
 
 ## FORWARD
@@ -46,10 +42,7 @@ def forward(x,L):
         for j in range(L):
             for i in range(L):
                 aux = alpha_matrix[i,t-1] + log_sum_features(t,j,i,x)
-                if i == 0: 
-                    alpha_matrix[j,t] = aux
-                else:
-                    alpha_matrix[j,t] = np.logaddexp2(alpha_matrix[j,t],aux)
+                alpha_matrix[j,t] = np.logaddexp2(alpha_matrix[j,t],aux)
     if verbose:
         print("\nFORWARD")
         print("Alpha matrix (log values):")
@@ -57,18 +50,49 @@ def forward(x,L):
         print("Alpha matrix (real values):")
         print(np.exp2(alpha_matrix))
         # Termination:
+        seq_prob = np.NINF
         for j in range(L):
-            if j == 0: 
-                seq_prob = alpha_matrix[j,N-1]
-            else:
-                seq_prob = np.logaddexp2(seq_prob,alpha_matrix[j,N-1])
+            seq_prob = np.logaddexp2(seq_prob,alpha_matrix[j,N-1])
         print("Sequence probability:")
         print("log: ", seq_prob, "\treal: ", np.exp2(seq_prob))
     return alpha_matrix
 
+## BACKWARD
+# Receives a sequence x and the number of states L
+# Returns the beta matrix
+def backward(x,L):  
+    N = x.size  # length of sequence
+    beta_matrix = np.full((L,N), np.NINF)
+    # Inicialization:
+    for j in range(L):
+        for i in range(L):
+            aux = log_sum_features(N-1,i,j,x)
+            beta_matrix[j,N-1] = np.logaddexp2(beta_matrix[j,N-1],aux)        
+    # Induction:
+    for t in reversed(range(1,N-1)):
+        for j in range(L):
+            for i in range(L):
+                aux = beta_matrix[i,t+1] + log_sum_features(t,i,j,x)
+                beta_matrix[j,t] = np.logaddexp2(beta_matrix[j,t],aux)
+    # Termination:
+    for j in range(L):
+        beta_matrix[j,0] = beta_matrix[j,1] + log_sum_features(0,j,None,x)
+    if verbose:
+        print("\nBACKWARD")
+        print("Beta matrix (log values):")
+        print(beta_matrix)
+        print("Beta matrix (real values):")
+        print(np.exp2(beta_matrix))
+        seq_prob = np.NINF
+        for j in range(L):
+            seq_prob = np.logaddexp2(seq_prob,beta_matrix[j,0])
+        print("Sequence probability:")
+        print("log: ", seq_prob, "\treal: ", np.exp2(seq_prob))
+    return beta_matrix
+
+
 ## VITERBI
 # Return the Viterbi path
-#
 def viterbi(x):
     n_positions = x.size
     viterbi_matrix = np.full((n_states,n_positions), np.NINF)
@@ -112,5 +136,6 @@ sequence = np.array([0,1,1])
 # sequence = np.array([0,1,2,3,0,1,2,3])
 
 forward(sequence,n_states)
+backward(sequence,n_states)
 
-viterbi(sequence)
+# viterbi(sequence)
