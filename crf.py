@@ -1,5 +1,6 @@
-from features import *
+from crf_models import *
 
+## FEATURES SUM
 # Return the weighted log sum of features functions results of a time t of a sequence x
 def log_sum_features(t,y_t,y_t_minus_1,x):
     log_sum_weighted_factors = 0.0
