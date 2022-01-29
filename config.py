@@ -3,6 +3,6 @@ model = 1  # HMM model
 
 '''
 1: Only one feature for the HMM
-2: HMM represented in 8 indicator features functions
+2: HMM represented in 10 indicator features functions
 '''
-features_config = 1
+features_config = 2

@@ -80,7 +80,7 @@ def f_HMM(t,y_t,y_t_minus_1,x):
     else:
         return emission_prob * A[y_t_minus_1,y_t]
 
-## HMM represented in 8 indicator features functions
+## HMM represented in 10 indicator features functions
 def f1(t,y_t,y_t_minus_1,x):
     if y_t == 0 and x[t] == 0: return 1
     else: return 0
@@ -113,9 +113,17 @@ def f8(t,y_t,y_t_minus_1,x):
     if y_t == 0 and y_t_minus_1 == 0: return 1
     else: return 0
 
+def f9(t,y_t,y_t_minus_1,x):
+    if t == 0 and y_t == 0: return 1
+    else: return 0
+
+def f10(t,y_t,y_t_minus_1,x):
+    if t == 0 and y_t == 1: return 1
+    else: return 0
+
 ## FEATURES FUNCTIONS LIST
 ff_list = []
-n_features = 8
+n_features = 10
 W = np.full((n_features), 0.0)  # weigths vector
 
 if features_config == 1:
@@ -139,3 +147,7 @@ elif features_config == 2:
     W[6] = 0.3
     ff_list.append(f8)
     W[7] = 0.99
+    ff_list.append(f9)
+    W[8] = 0.5
+    ff_list.append(f10)
+    W[9] = 0.5

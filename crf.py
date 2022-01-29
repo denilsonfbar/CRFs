@@ -2,13 +2,13 @@ from features import *
 
 # Return the weighted log sum of features functions results of a time t of a sequence x
 def log_sum_features(t,y_t,y_t_minus_1,x):
-    sum = 0.0
+    log_sum_weighted_factors = 0.0
     for i in range(len(ff_list)):
-        factor = ff_list[i](t,y_t,y_t_minus_1,x)
-        sum += factor
-    weighted_factor = W[i] * sum
-    log_weighted_factor = np.log2(weighted_factor)
-    return log_weighted_factor
+        weighted_factor = W[i] * ff_list[i](t,y_t,y_t_minus_1,x)
+        if weighted_factor != 0.0:
+            log_weighted_factor = np.log2(weighted_factor)
+            log_sum_weighted_factors += log_weighted_factor
+    return log_sum_weighted_factors
 
 ## FORWARD
 # Receives a sequence x and the number of states L
