@@ -41,6 +41,24 @@ def f9(t,y_t,y_t_minus_1,x):
     if y_t == 1 and x[t] == 1: return 1  # Emission of 1 in state 1
     else: return 0
 
+
+'''
+HMM with 2 hidden states represented with 2 indicator features functions 
+and weights initializeds with 1.0
+f0 represents the emission of symbol 0 in state 0 and symbol 1 in state 1
+f1 represents the emission of symbol 0 in state 1 and symbol 0 in state 1
+'''
+def f0(t,y_t,y_t_minus_1,x):
+    if y_t == 0 and x[t] == 0: return 1  # Emission of 0 in state 0
+    elif y_t == 1 and x[t] == 1: return 1  # Emission of 1 in state 1
+    else: return 0
+
+def f1(t,y_t,y_t_minus_1,x):
+    if y_t == 1 and x[t] == 0: return 1  # Emission of 0 in state 1
+    elif y_t == 0 and x[t] == 1: return 1  # Emission of 1 in state 0
+    else: return 0
+
+
 ## FEATURES FUNCTIONS LIST
 ff_list = []
 
@@ -76,3 +94,12 @@ elif CRF_model == 2:
     W[8] = np.log(E[1,0])
     ff_list.append(f9)  # Emission of 1 in state 1
     W[9] = np.log(E[1,1])
+
+# HMM with 2 hidden states represented with 2 indicator features functions 
+# and weights initializeds with 1.0
+elif CRF_model == 3:
+    W = np.full((2), 0.0)
+    ff_list.append(f0)
+    W[0] = 1.0
+    ff_list.append(f1)
+    W[1] = 1.0

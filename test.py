@@ -7,7 +7,6 @@ res = minimize(l_min, W, method='nelder-mead',
                options={'xatol': 1e-8, 'disp': True})
 print(res.x)
 
-
 print('\n\n\n')
 
 if HMM_model == 1:  # Flips of a fair coin and a biased coin alternately

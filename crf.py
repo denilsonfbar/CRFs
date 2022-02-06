@@ -3,11 +3,11 @@ from crf_models import *
 X = []  # train set
 Y = []
 
-X.append(np.array([0,1,1]))
-Y.append(np.array([0,1,1]))
+X.append(np.array([0,0,0,0,0,1,1,1,1,1]))
+Y.append(np.array([0,0,0,0,0,1,1,1,1,1]))
 
-X.append(np.array([0,0,0,0,1,0,1,1,1,0]))
-Y.append(np.array([0,0,0,0,1,0,1,1,1,0]))
+# X.append(np.array([0,0,0,0,0,1,1,1,1,1]))
+# Y.append(np.array([1,1,1,1,1,0,0,0,0,0]))
 
 ## FEATURES SUM
 # Return the weighted sum of features functions results of a time t of a sequence x
