@@ -1,4 +1,4 @@
-verbose = True  # print the detailed execution informations
+verbose = False  # print the detailed execution informations
 
 '''
 1: Flips of a fair coin and a biased coin alternately

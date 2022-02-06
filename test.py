@@ -1,4 +1,14 @@
 from crf import *
+import numpy as np
+from scipy.optimize import minimize
+
+l_min = lambda W: -l(W)
+res = minimize(l_min, W, method='nelder-mead',
+               options={'xatol': 1e-8, 'disp': True})
+print(res.x)
+
+
+print('\n\n\n')
 
 if HMM_model == 1:  # Flips of a fair coin and a biased coin alternately
     sequence = np.array([0,1,1])

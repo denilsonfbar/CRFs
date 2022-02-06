@@ -1,31 +1,21 @@
 from crf_models import *
 
 X = []  # train set
+Y = []
+
 X.append(np.array([0,1,1]))
+Y.append(np.array([0,1,1]))
+
 X.append(np.array([0,0,0,0,1,0,1,1,1,0]))
-
-def l(W):
-    ret = 0.0
-    for x in X:
-        pass
-
-def Z(x):
-    L = n_states
-    N = x.size  # length of sequence
-    alpha_matrix = forward(x)
-    Z_value = np.NINF
-    for j in range(L):
-        Z_value = np.logaddexp(Z_value,alpha_matrix[j,N-1])
-    return Z_value
-
-
+Y.append(np.array([0,0,0,0,1,0,1,1,1,0]))
 
 ## FEATURES SUM
 # Return the weighted sum of features functions results of a time t of a sequence x
 def sum_features_t(t,y_t,y_t_minus_1,x):
     sum_weighted_factors = 0.0
-    for i in range(len(ff_list)):
-        weighted_factor = W[i] * ff_list[i](t,y_t,y_t_minus_1,x)
+    K = len(ff_list)
+    for k in range(K):
+        weighted_factor = W[k] * ff_list[k](t,y_t,y_t_minus_1,x)
         sum_weighted_factors += weighted_factor
     return sum_weighted_factors
 
@@ -58,6 +48,37 @@ def forward(x):
         print("Sequence probability:")
         print("log: ", seq_prob, "\treal: ", np.exp(seq_prob))
     return log_alpha_matrix
+
+
+def log_Z(x):
+    L = n_states
+    T = x.size
+    alpha_matrix = forward(x)
+    Z = np.NINF
+    for j in range(L):
+        Z = np.logaddexp(Z,alpha_matrix[j,T-1])
+    return Z
+
+
+def l(W):
+    ret = 0.0
+    sum_log_Z = 0.0
+    N = len(X)
+    K = len(ff_list)
+    for n in range(N):
+        x = X[n]
+        y = Y[n]
+        T = x.size
+        sum_log_Z += log_Z(x)
+        for t in range(T):
+            for k in range(K):
+                if t == 0:
+                    ret += W[k] * ff_list[k](t,y[t],None,x)
+                else:
+                    ret += W[k] * ff_list[k](t,y[t],y[t-1],x)
+    ret -= sum_log_Z
+    return ret
+
 
 ## BACKWARD
 # Receives a sequence x
