@@ -4,9 +4,9 @@ from hmm_models import *
 def f_HMM(t,y_t,y_t_minus_1,x):
     emission_prob = E[y_t,x[t]]
     if t == 0:
-        return emission_prob * I[y_t]
+        return np.log(emission_prob * I[y_t])
     else:
-        return emission_prob * T[y_t_minus_1,y_t]
+        return np.log(emission_prob * T[y_t_minus_1,y_t])
 
 ## HMM with 2 hidden states represented with 10 indicator features functions 
 #  and weights corresponding to the probabilities of the HMM model
@@ -57,22 +57,22 @@ if CRF_model == 1:
 elif CRF_model == 2:
     W = np.full((10), 0.0)
     ff_list.append(f0)  # State 0 in first position
-    W[0] = I[0]
+    W[0] = np.log(I[0])
     ff_list.append(f1)  # State 1 in first position
-    W[1] = I[1]
+    W[1] = np.log(I[1])
     ff_list.append(f2)  # Transition states 0 -> 0
-    W[2] = T[0,0]
+    W[2] = np.log(T[0,0])
     ff_list.append(f3)  # Transition states 0 -> 1
-    W[3] = T[0,1]
+    W[3] = np.log(T[0,1])
     ff_list.append(f4)  # Transition states 1 -> 0
-    W[4] = T[1,0]
+    W[4] = np.log(T[1,0])
     ff_list.append(f5)  # Transition states 1 -> 1
-    W[5] = T[1,1]
+    W[5] = np.log(T[1,1])
     ff_list.append(f6)  # Emission of 0 in state 0
-    W[6] = E[0,0]
+    W[6] = np.log(E[0,0])
     ff_list.append(f7)  # Emission of 1 in state 0
-    W[7] = E[0,1]
+    W[7] = np.log(E[0,1])
     ff_list.append(f8)  # Emission of 0 in state 1
-    W[8] = E[1,0]
+    W[8] = np.log(E[1,0])
     ff_list.append(f9)  # Emission of 1 in state 1
-    W[9] = E[1,1]
+    W[9] = np.log(E[1,1])

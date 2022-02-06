@@ -13,7 +13,7 @@ elif HMM_model == 2:  # Dishonest casino
 elif HMM_model == 3:  # DNA simulation (3 states)
     sequence = np.array([0,1,2,3,0,1,2,3])
 
-alpha_matrix = forward(sequence,n_states)
-beta_matrix = backward(sequence,n_states)
+alpha_matrix = forward(sequence)
+beta_matrix = backward(sequence)
 posterior_decoding_path = posterior_decoding(alpha_matrix,beta_matrix)
-viterbi_decoding_path = viterbi_decoding(sequence,n_states)
+viterbi_decoding_path = viterbi_decoding(sequence)
